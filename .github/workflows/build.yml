@@ -37,31 +37,31 @@ jobs:
             os: windows-latest
             aarch: amd64
             targets: exe
-            filename: hiddify-windows-x64
+            filename: aseprite-windows-x64
 
           # - platform: linux-appimage
           #   os: ubuntu-20.04
           #   aarch: amd64
           #   targets: AppImage
-          #   filename: hiddify-linux-x64
+          #   filename: aseprite-linux-x64
 
           - platform: linux-deb
             os: ubuntu-20.04
             aarch: amd64
             targets: deb
-            filename: hiddify-debian-x64
+            filename: aseprite-debian-x64
             
           - platform: linux-rpm
             os: ubuntu-20.04
             aarch: amd64
             targets: rpm
-            filename: hiddify-rpm-x64
+            filename: aseprite-rpm-x64
 
           - platform: macos
             os: macos-13
             aarch: universal
             targets: dmg
-            filename: hiddify-macos-universal
+            filename: aseprite-macos-universal
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -198,17 +198,17 @@ jobs:
         run: |
           mkdir out
           ls -R ./build/app/outputs
-          cp ./build/app/outputs/flutter-apk/*arm64-v8a*.apk out/hiddify-android-arm64.apk || echo "no arm64 apk"
-          cp ./build/app/outputs/flutter-apk/*armeabi-v7a*.apk out/hiddify-android-arm7.apk || echo "no arm7 apk"
-          cp ./build/app/outputs/flutter-apk/*x86_64*.apk out/hiddify-android-x86_64.apk || echo "no x64 apk"
-          cp ./build/app/outputs/flutter-apk/app-release.apk out/hiddify-android-universal.apk || echo "no universal apk"
+          cp ./build/app/outputs/flutter-apk/*arm64-v8a*.apk out/aseprite-android-arm64.apk || echo "no arm64 apk"
+          cp ./build/app/outputs/flutter-apk/*armeabi-v7a*.apk out/aseprite-android-arm7.apk || echo "no arm7 apk"
+          cp ./build/app/outputs/flutter-apk/*x86_64*.apk out/aseprite-android-x86_64.apk || echo "no x64 apk"
+          cp ./build/app/outputs/flutter-apk/app-release.apk out/aseprite-android-universal.apk || echo "no universal apk"
 
       - name: Copy to out Android AAB
         if: matrix.platform == 'android-aab'
         run: |
           mkdir out
           ls -R ./build/app/outputs
-          cp ./build/app/outputs/bundle/release/app-release.aab out/hiddify-android-market.aab || echo "no aab"
+          cp ./build/app/outputs/bundle/release/app-release.aab out/aseprite-android-market.aab || echo "no aab"
 
       - name: Copy to out unix
         if: startsWith(matrix.platform,'linux') || matrix.platform == 'macos' || matrix.platform == 'ios'
@@ -278,7 +278,7 @@ jobs:
       - name: prepare_release_message
         run: |
           pip install gitchangelog pystache mustache markdown
-          prelease=$(curl --silent "https://api.github.com/repos/hiddify/hiddify-next/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")')
+          prelease=$(curl --silent "https://api.github.com/repos/aseprite/aseprite-next/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")')
           current="${{ github.ref_name }}"
           sed 's|RELEASE_TAG|${{ env.TAG_NAME }}|g' ./.github/release_message.md > release.md
           echo -e "\n\n<details markdown=1><summary>All changes from $current to the latest commit:</summary>\n\n">>release.md
@@ -314,7 +314,7 @@ jobs:
           ls -R ./out
           ls -R ./.github/
           ls -R ./.git/
-          mv out/hiddify-android-market.aab  hiddify-android-market.aab
+          mv out/aseprite-android-market.aab  aseprite-android-market.aab
 
       - name: prepare_release_message
         run: |
@@ -338,7 +338,7 @@ jobs:
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJson: service_account.json
-          packageName: app.hiddify.com
+          packageName: app.aseprite.com
           releaseName: ${{ env.TAG_NAME }}
-          releaseFiles: ./hiddify-android-market.aab
+          releaseFiles: ./aseprite-android-market.aab
           track: 'beta'
