@@ -1,4 +1,4 @@
-name: build
+name: buildmac
 on: [push, pull_request]
 jobs:
   build:
@@ -23,17 +23,22 @@ jobs:
       with:
         key: ${{ matrix.os }}-${{ matrix.enable_ui }}
     - uses: seanmiddleditch/gha-setup-ninja@master
+    - uses: ilammy/msvc-dev-cmd@v1
+      if: runner.os == 'macos'
     - name: Install Dependencies
       shell: bash
       run: |
-        if [[ "${{ runner.os }}" == "macOS" ]]; then
-          brew update
-          brew install cmake ninja
+        if [[ "${{ runner.os }}" == "Linux" ]] ; then
+          sudo apt-get update -qq
+          sudo apt-get install -y \
+            libx11-dev libxcursor-dev libxi-dev
         fi
     - name: Generating Makefiles
       shell: bash
       run: |
-        if [[ "${{ runner.os }}" == "macOS" ]]; then
+        if [[ "${{ runner.os }}" == "macos" ]] ; then
+          export enable_ccache=off
+        else
           export enable_ccache=on
         fi
         curl -L https://github.com/blueloveTH/aseprite/releases/download/v0.01/skia.zip --output skia.zip
@@ -55,4 +60,4 @@ jobs:
         name: aseprite
         path: |
           D:/a/aseprite/aseprite/build/bin/data
-          D:/a/aseprite/aseprite/build/bin/aseprite
+          D:/a/aseprite/aseprite/build/bin/aseprite.exe
